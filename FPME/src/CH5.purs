@@ -1,6 +1,8 @@
 module CH5 where
 
 import Prelude (Unit, show, discard)
+
+import Data.List (List(..), (:))
 import Effect (Effect)
 import Effect.Console (log)
 
