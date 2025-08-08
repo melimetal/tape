@@ -25,7 +25,12 @@ applyFlipped = flip apply
 
 infixl 1 applyFlipped as #
 
+-- Lists to study recursive functions
+singleton :: forall a. a -> List a
+singleton x = x : Nil
+
 test :: Effect Unit
 test = do
   log $ show $ flip const 1 2
   flip const 1 2 # show # log
+  log $ show $ singleton "xyz"
