@@ -6,7 +6,6 @@ import Data.List (List(..), (:))
 import Effect (Effect)
 import Effect.Console (log)
 
-
 -- NOTE: Constant function not value.
 const :: forall a b. a -> b -> a
 const x _ = x
@@ -30,9 +29,15 @@ infixl 1 applyFlipped as #
 singleton :: forall a. a -> List a
 singleton x = x : Nil
 
+-- Check for empty values (alt. end of the list)
 null :: forall a. List a -> Boolean
 null Nil = true
 null _   = false
+
+-- Does the inverse of cons (adds to the end of List)
+snoc :: forall a. List a -> a -> List a
+snoc Nil x        = singleton x
+snoc (x : xs) y   = x : snoc xs y 
 
 test :: Effect Unit
 test = do
@@ -41,3 +46,4 @@ test = do
   log $ show $ singleton "xyz"
   log $ show $ null Nil
   log $ show $ null ("abc" : Nil)
+  log $ show $ snoc (1 : 2 : Nil) 3
