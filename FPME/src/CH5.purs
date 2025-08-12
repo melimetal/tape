@@ -1,6 +1,6 @@
 module CH5 where
 
-import Prelude (Unit, show, discard, (+))
+import Prelude (Unit, (+), (==), (/=), (<), (>=), show, discard, negate, otherwise)
 
 import Data.List (List(..), (:))
 import Data.Maybe (Maybe(..))
@@ -62,6 +62,42 @@ tail ∷ ∀ a. List a → Maybe (List a)
 tail Nil = Nothing
 tail (_ : xs) = Just xs
 
+last ∷ ∀ a. List a → Maybe a
+last Nil = Nothing
+last (_ : xs) = if length xs == 1 then head xs else last xs
+
+last' ∷ ∀ a. List a → Maybe a
+last' Nil = Nothing
+last' (x : Nil) = Just x
+last' (_ : xs) = last' xs
+
+init ∷ ∀ a. List a → Maybe (List a)
+init Nil = Nothing
+init l = Just $ go l where
+  go Nil = Nil
+  go (_ : Nil) = Nil
+  go (x : xs) = x : go xs
+
+uncons ∷ ∀ a. List a  → Maybe { head ∷ a, tail ∷ List a}
+uncons Nil = Nothing
+uncons (x : xs) = Just { head: x, tail: xs }
+
+index ∷ ∀ a. List a → Int → Maybe a
+index Nil _ = Nothing
+index l v = go l 0
+  where
+  go Nil _ = Nothing
+  go (x : xs) vi
+    | v < 0 = Nothing
+    | vi == v = Just x
+    | otherwise = go xs (vi + 1)
+
+infixl 8 index as !!
+
+findIndex ∷ ∀ a. (a → Boolean) → List a → Maybe Int
+findIndex _ Nil = Nothing
+findIndex pred (x : xs) = ?_
+
 test ∷ Effect Unit
 test = do
   log $ show $ flip const 1 2
@@ -77,3 +113,19 @@ test = do
   log $ show $ head ("abc" : "123" : Nil)
   log $ show (tail Nil :: (Maybe (List Unit)))
   log $ show $ tail ("abc" : "123" : "sfdsf" : Nil)
+  log $ show (last Nil :: (Maybe Unit))
+  log $ show $ last ("first" : "second" : "third" : Nil)
+  log $ show $ last' ("first" : "second" : "third" : "fourth" : Nil)
+  log $ show $ init (Nil :: (List (Maybe Unit)))
+  log $ show $ init (1 : Nil)
+  log $ show $ init (1 : 2 : Nil)
+  log $ show $ init (1 : 2 : 3 : Nil)
+  log $ show $ uncons (1 : 2 : 3 : Nil)
+  log $ show $ index (1 : Nil) 4
+  log $ show $ index (1 : 2 : 3 : Nil) 1
+  log $ show $ index (Nil :: List Unit) 0
+  log $ show $ index (1 : 2 : 3 : Nil) (-1)
+  (1 : 2 : 3 : Nil) !! 2 # show # log
+  findIndex (_ >= 2) (1 : 2 : 3 : Nil) # show # log  
+  findIndex (_ >= 99) (1 : 2 : 3 : Nil) # show # log  
+  findIndex (10 /= _) (Nil :: List Int) # show # log  
