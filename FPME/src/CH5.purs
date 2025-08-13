@@ -1,6 +1,6 @@
 module CH5 where
 
-import Prelude (Unit, (+), (==), (/=), (<), (>=), show, discard, negate, otherwise)
+import Prelude (Unit, (+), (==), (/=), (<), (>) ,(>=), discard, negate, otherwise, show)
 
 import Data.List (List(..), (:))
 import Data.Maybe (Maybe(..))
@@ -74,11 +74,12 @@ last' (_ : xs) = last' xs
 init ∷ ∀ a. List a → Maybe (List a)
 init Nil = Nothing
 init l = Just $ go l where
+  go ∷ List a → List a
   go Nil = Nil
   go (_ : Nil) = Nil
   go (x : xs) = x : go xs
 
-uncons ∷ ∀ a. List a  → Maybe { head ∷ a, tail ∷ List a}
+uncons ∷ ∀ a. List a  → Maybe { head ∷ a, tail ∷ List a }
 uncons Nil = Nothing
 uncons (x : xs) = Just { head: x, tail: xs }
 
@@ -86,6 +87,7 @@ index ∷ ∀ a. List a → Int → Maybe a
 index Nil _ = Nothing
 index l v = go l 0
   where
+  go ∷ List a → Int → Maybe a 
   go Nil _ = Nothing
   go (x : xs) vi
     | v < 0 = Nothing
@@ -96,7 +98,15 @@ infixl 8 index as !!
 
 findIndex ∷ ∀ a. (a → Boolean) → List a → Maybe Int
 findIndex _ Nil = Nothing
-findIndex pred (x : xs) = ?_
+findIndex pred l = go 0 l
+  where
+  go ∷ Int → List a → Maybe Int 
+  go _ Nil = Nothing
+  go v (x : xs) = if pred x then Just v else go (v + 1) xs
+
+findLastIndex ∷ ∀ a. (a → Boolean) → List a → Maybe Int
+findLastIndex _ Nil = Nothing
+findLastIndex pred l = ?what
 
 test ∷ Effect Unit
 test = do
@@ -126,6 +136,9 @@ test = do
   log $ show $ index (Nil :: List Unit) 0
   log $ show $ index (1 : 2 : 3 : Nil) (-1)
   (1 : 2 : 3 : Nil) !! 2 # show # log
-  findIndex (_ >= 2) (1 : 2 : 3 : Nil) # show # log  
+  findIndex (_ > 2) (1 : 2 : 3 : 4 : Nil) # show # log  
   findIndex (_ >= 99) (1 : 2 : 3 : Nil) # show # log  
   findIndex (10 /= _) (Nil :: List Int) # show # log  
+  -- findLastIndex (_ == 10) (Nil :: List Int) # show # log
+  -- findLastIndex (_ == 10) (10 : 5 : -1 : 2 : 10 : Nil) # show # log
+  -- findLastIndex (_ == 10) (11 : 12 : Nil) # show # log 
