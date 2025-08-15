@@ -1,7 +1,9 @@
 module CBC.src.Chapter1-Agda where
 
+open import Agda.Primitive renaming (Set to Type ; Setω to Typeω)
+
 module Booleans where
-  data Bool : Set where
+  data Bool : Type where
     false : Bool
     true : Bool
 
